@@ -207,7 +207,8 @@
         "one": "{{ count }} product",
         "other": "{{ count }} products"
       },
-      "collection_label": "Collection"
+      "collection_label": "Collection",
+      "buy_now": "Buy Now"
     },
     "catalog": {
       "title": "Catalog"

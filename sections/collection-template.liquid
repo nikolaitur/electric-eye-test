@@ -233,6 +233,127 @@
 
 {% endpaginate %}
 
+<style>
+  .form-product-grid-atc {
+    position: relative;
+    z-index: 3;
+  }
+</style>
+
+<script>
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+  
+  var Form = /*#__PURE__*/function () {
+      function Form() {
+        _classCallCheck(this, Form);
+      }
+
+      _createClass(Form, null, [{
+        key: "serialize",
+        value: function serialize(form) {
+          function stringKey(key, value) {
+            var beginBracket = key.lastIndexOf('[');
+
+            if (beginBracket === -1) {
+              var _hash = {};
+              _hash[key] = value;
+              return _hash;
+            }
+
+            var newKey = key.substr(0, beginBracket);
+            var newValue = {};
+            newValue[key.substring(beginBracket + 1, key.length - 1)] = value;
+            return stringKey(newKey, newValue);
+          }
+
+          var hash = {};
+
+          for (var i = 0, len = form.elements.length; i < len; i++) {
+            var formElement = form.elements[i];
+
+            if (formElement.name === '' || formElement.disabled) {
+              continue;
+            }
+
+            if (formElement.name && !formElement.disabled && (formElement.checked || /select|textarea/i.test(formElement.nodeName) || /hidden|text|search|tel|url|email|password|datetime|date|month|week|time|datetime-local|number|range|color/i.test(formElement.type))) {
+              var stringKeys = stringKey(formElement.name, formElement.value);
+              hash = Form.extend(hash, stringKeys);
+            }
+          }
+
+          return hash;
+        }
+      }, {
+        key: "extend",
+        value: function extend() {
+          var extended = {};
+          var i = 0; // Merge the object into the extended object
+
+          var merge = function merge(obj) {
+            for (var prop in obj) {
+              if (obj.hasOwnProperty(prop)) {
+                // If property is an object, merge properties
+                if (Object.prototype.toString.call(obj[prop]) === '[object Object]') {
+                  extended[prop] = Form.extend(extended[prop], obj[prop]);
+                } else {
+                  extended[prop] = obj[prop];
+                }
+              }
+            }
+          }; // Loop through each object and conduct a merge
+
+
+          for (; i < arguments.length; i++) {
+            merge(arguments[i]);
+          }
+
+          return extended;
+        }
+      }]);
+
+      return Form;
+    }();
+
+  
+  
+  document.querySelectorAll('.form-product-grid-atc').forEach(item => {
+    item.addEventListener('click', event => {
+      event.preventDefault();
+      fetch("/cart/add.js", {
+        body: JSON.stringify(Form.serialize(item)),
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(function (response) {           
+
+        if (response.ok) {
+          document.location.href = "/checkout";          
+        } else {
+          
+        }
+      });
+    })
+  })
+
+</script>
 
 
 {% schema %}

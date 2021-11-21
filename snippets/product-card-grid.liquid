@@ -46,4 +46,13 @@
 
   {% include 'product-price-listing', product: product, show_vendor: show_vendor %}
 
+  {% if settings.enable_buynow and product.available %}
+    <form method="post" action="/cart/add" id="form-product-grid-atc" class="form-product-grid-atc" enctype="multipart/form-data" novalidate="novalidate">
+      <input type="hidden" name="form_type" value="product">
+      <input type="hidden" name="utf8" value="✓">
+      <input name="id" value="{{ product.first_available_variant.id }}" type="hidden">
+      <button type="submit" class="btn btn--primary btn-product-grid-atc">{{ 'collections.general.buy_now' | t }}</button>
+    </form>  
+  {% endif %}
+
 </div>
