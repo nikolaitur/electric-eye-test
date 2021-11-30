@@ -1644,6 +1644,12 @@
         "id": "enable_buynow",
         "label": "Enable Buy Now Button",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "change_to_atc",
+        "label": "Change To Add to Cart",
+        "default": true
       }
     ]
   }

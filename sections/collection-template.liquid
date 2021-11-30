@@ -15,9 +15,18 @@
   {%- assign limit = 16 -%}
 {% endif %}
 
+
+
 {% paginate collection.products by limit %}
 
 <div data-section-id="{{ section.id }}" data-section-type="collection-template">
+
+  <div data-add-to-cart style="display: none;" data-product-form>
+    <span data-add-to-cart-text style="display: none;"></span>
+  </div>
+
+
+
   <header class="collection-header">
     {%- assign is_filter_by_available = false -%}
     {%- if section.settings.tags_enable and collection.all_tags.size > 0 -%}
@@ -125,6 +134,14 @@
   </header>
 
   <div class="page-width" id="Collection">
+    <div class="product-form__error-message-wrapper product-form__error-message-wrapper--hidden{% if section.settings.enable_payment_button %} product-form__error-message-wrapper--has-payment-button{% endif %}"
+    data-error-message-wrapper
+    role="alert"
+  >
+    <span class="visually-hidden">{{ 'general.accessibility.error' | t }} </span>
+    {% include 'icon-error' %}
+    <span class="product-form__error-message" data-error-message>{{ 'products.product.quantity_minimum_message' | t }}</span>
+  </div>
     {% if section.settings.layout == 'grid' %}
       {% case section.settings.grid %}
       {% when 2 %}
@@ -240,6 +257,15 @@
   }
 </style>
 
+{% assign product = collection.products[0] %}
+
+<script type="application/json" id="ProductJson-{{ section.id }}">
+  {{ product | json }}
+</script>
+<script type="application/json" id="ModelJson-{{ section.id }}">
+  {{ product.media | where: 'media_type', 'model' | json }}
+</script>
+
 <script>
 
   function _defineProperties(target, props) {
@@ -331,27 +357,7 @@
 
   
   
-  document.querySelectorAll('.form-product-grid-atc').forEach(item => {
-    item.addEventListener('click', event => {
-      event.preventDefault();
-      fetch("/cart/add.js", {
-        body: JSON.stringify(Form.serialize(item)),
-        credentials: 'same-origin',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      }).then(function (response) {           
-
-        if (response.ok) {
-          document.location.href = "/checkout";          
-        } else {
-          
-        }
-      });
-    })
-  })
+  
 
 </script>
 

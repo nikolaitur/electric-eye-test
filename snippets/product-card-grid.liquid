@@ -47,11 +47,17 @@
   {% include 'product-price-listing', product: product, show_vendor: show_vendor %}
 
   {% if settings.enable_buynow and product.available %}
-    <form method="post" action="/cart/add" id="form-product-grid-atc" class="form-product-grid-atc" enctype="multipart/form-data" novalidate="novalidate">
+    <form method="post" action="/cart/add" id="form-product-grid-atc" class="form-product-grid-atc {% if settings.change_to_atc %}ajax-atc{% endif %}" enctype="multipart/form-data" novalidate="novalidate">
       <input type="hidden" name="form_type" value="product">
       <input type="hidden" name="utf8" value="✓">
       <input name="id" value="{{ product.first_available_variant.id }}" type="hidden">
-      <button type="submit" class="btn btn--primary btn-product-grid-atc">{{ 'collections.general.buy_now' | t }}</button>
+      <button type="submit" class="btn btn--primary btn-product-grid-atc">
+        {% if settings.change_to_atc %}
+          {{ 'products.product.add_to_cart' | t }}
+        {% else %}
+          {{ 'collections.general.buy_now' | t }}
+        {% endif %}
+      </button>
     </form>  
   {% endif %}
 
