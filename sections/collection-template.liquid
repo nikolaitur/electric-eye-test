@@ -255,7 +255,28 @@
     position: relative;
     z-index: 3;
   }
+
+  .form-product-grid-atc .variant-selector {
+    margin: 10px 0;
+  }
 </style>
+
+<script>
+  document.querySelectorAll('.form-product-grid-atc .variant-selector').forEach(item => {
+    item.addEventListener('change', event => {
+      const selectedOptionElement = item.options[item.selectedIndex];      
+      const variantImage = selectedOptionElement.getAttribute('data-img-url');
+      const variantPrice = selectedOptionElement.getAttribute('data-variant-price'); 
+      const variantUrl = selectedOptionElement.getAttribute('data-variant-url');
+      const productItem = item.closest('.grid-view-item');
+      productItem.querySelector('.grid-view-item__link').setAttribute('href', variantUrl);
+      productItem.querySelector('.price').innerHTML = variantPrice;      
+      productItem.querySelector('.grid-view-item__image').setAttribute('src', variantImage);
+      productItem.querySelector('.grid-view-item__image').setAttribute('srcset', variantImage);
+    })
+  });      
+</script>
+
 
 {% assign product = collection.products[0] %}
 

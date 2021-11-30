@@ -8192,7 +8192,7 @@ theme.Product = (function() {
       );      
 
       document.querySelectorAll('.form-product-grid-atc').forEach(item => {
-        item.addEventListener('click', event => {
+        item.addEventListener('submit', event => {
           event.preventDefault();
           fetch("/cart/add.js", {
             body: theme.Helpers.serialize(item),

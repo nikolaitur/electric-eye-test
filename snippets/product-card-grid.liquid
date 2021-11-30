@@ -50,7 +50,16 @@
     <form method="post" action="/cart/add" id="form-product-grid-atc" class="form-product-grid-atc {% if settings.change_to_atc %}ajax-atc{% endif %}" enctype="multipart/form-data" novalidate="novalidate">
       <input type="hidden" name="form_type" value="product">
       <input type="hidden" name="utf8" value="✓">
-      <input name="id" value="{{ product.first_available_variant.id }}" type="hidden">
+      {% assign variant_count = product.variants | size %}
+      {% if variant_count == 1 or settings.show_variants == false %}
+        <input name="id" value="{{ product.first_available_variant.id }}" type="hidden">
+      {% else %}
+        <select name="id" class="variant-selector">
+          {% for variant in product.variants %}          
+            <option value="{{ variant.id }}" {% if variant.id == product.first_available_variant.id %}selected{% endif %} {% unless variant.available %}disabled{% endunless %} data-img-url="{{ variant.image | img_url: '512x' }}" data-variant-url="{{ variant.url }}" data-variant-price="{{ variant.price | money }}" >{{ variant.title }}</option>
+          {% endfor %}
+        </select>
+      {% endif %}
       <button type="submit" class="btn btn--primary btn-product-grid-atc">
         {% if settings.change_to_atc %}
           {{ 'products.product.add_to_cart' | t }}
