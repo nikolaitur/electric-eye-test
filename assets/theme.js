@@ -7941,6 +7941,7 @@ theme.Product = (function() {
       variantSoldOut: 'product-form--variant-sold-out'
     };
 
+
     this.eventHandlers = {};
 
     this.quantityInput = container.querySelector(this.selectors.quantity);
@@ -8007,6 +8008,8 @@ theme.Product = (function() {
 
     this.mqlMediumUp = window.matchMedia(this.settings.mediaQueryMediumUp);
     this.mqlMediumUp.addListener(this.initDesktopBreakpoint);
+
+    
 
     this.initMobileBreakpoint();
     this.initDesktopBreakpoint();
@@ -8154,6 +8157,8 @@ theme.Product = (function() {
     },
 
     _initAddToCart: function() {
+      console.log('_initAddtoCart');
+      var self = this;
       this.productForm.addEventListener(
         'submit',
         function(evt) {
@@ -8184,7 +8189,51 @@ theme.Product = (function() {
             return;
           }
         }.bind(this)
-      );
+      );      
+
+      document.querySelectorAll('.form-product-grid-atc').forEach(item => {
+        item.addEventListener('submit', event => {
+          event.preventDefault();
+          fetch("/cart/add.js", {
+            body: theme.Helpers.serialize(item),
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+          }).then(function(response) {
+            return response.json();
+          })
+          .then(function(json) {
+            console.log(json);
+            if (json.status && json.status !== 200) {
+              var error = new Error(json.description);
+              error.isFromServer = true;
+              throw error;
+            }
+            if(item.classList.contains('ajax-atc')) {
+              self._hideErrorMessage();
+              self._setupCartPopup(json);                
+            } else {
+              document.location.href = "/checkout";          
+            }
+            
+          })
+          .catch(function(error) {            
+            self._showErrorMessage(
+              error.isFromServer && error.message.length
+                ? error.message
+                : theme.strings.cartError
+            );
+            
+            // eslint-disable-next-line no-console
+            console.log(error);
+          });
+          
+        })
+      })
+
     },
 
     _initProductVideo: function() {
@@ -8253,6 +8302,7 @@ theme.Product = (function() {
             throw error;
           }
           self._hideErrorMessage();
+          console.log(json);
           self._setupCartPopup(json);
         })
         .catch(function(error) {
@@ -9525,6 +9575,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   sections.register('cart-template', theme.Cart);
   sections.register('product', theme.Product);
+  sections.register('collection-template', theme.Product);
   sections.register('collection-template', theme.Filters);
   sections.register('product-template', theme.Product);
   sections.register('header-section', theme.HeaderSection);

@@ -15,9 +15,18 @@
   {%- assign limit = 16 -%}
 {% endif %}
 
+
+
 {% paginate collection.products by limit %}
 
 <div data-section-id="{{ section.id }}" data-section-type="collection-template">
+
+  <div data-add-to-cart style="display: none;" data-product-form>
+    <span data-add-to-cart-text style="display: none;"></span>
+  </div>
+
+
+
   <header class="collection-header">
     {%- assign is_filter_by_available = false -%}
     {%- if section.settings.tags_enable and collection.all_tags.size > 0 -%}
@@ -125,6 +134,14 @@
   </header>
 
   <div class="page-width" id="Collection">
+    <div class="product-form__error-message-wrapper product-form__error-message-wrapper--hidden{% if section.settings.enable_payment_button %} product-form__error-message-wrapper--has-payment-button{% endif %}"
+    data-error-message-wrapper
+    role="alert"
+  >
+    <span class="visually-hidden">{{ 'general.accessibility.error' | t }} </span>
+    {% include 'icon-error' %}
+    <span class="product-form__error-message" data-error-message>{{ 'products.product.quantity_minimum_message' | t }}</span>
+  </div>
     {% if section.settings.layout == 'grid' %}
       {% case section.settings.grid %}
       {% when 2 %}
@@ -233,6 +250,137 @@
 
 {% endpaginate %}
 
+<style>
+  .form-product-grid-atc {
+    position: relative;
+    z-index: 3;
+  }
+
+  .form-product-grid-atc .variant-selector {
+    margin: 10px 0;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.form-product-grid-atc .variant-selector').forEach(item => {
+    item.addEventListener('change', event => {
+      const selectedOptionElement = item.options[item.selectedIndex];      
+      const variantImage = selectedOptionElement.getAttribute('data-img-url');
+      const variantPrice = selectedOptionElement.getAttribute('data-variant-price'); 
+      const variantUrl = selectedOptionElement.getAttribute('data-variant-url');
+      const productItem = item.closest('.grid-view-item');
+      productItem.querySelector('.grid-view-item__link').setAttribute('href', variantUrl);
+      productItem.querySelector('.price').innerHTML = variantPrice;      
+      productItem.querySelector('.grid-view-item__image').setAttribute('src', variantImage);
+      productItem.querySelector('.grid-view-item__image').setAttribute('srcset', variantImage);
+    })
+  });      
+</script>
+
+
+{% assign product = collection.products[0] %}
+
+<script type="application/json" id="ProductJson-{{ section.id }}">
+  {{ product | json }}
+</script>
+<script type="application/json" id="ModelJson-{{ section.id }}">
+  {{ product.media | where: 'media_type', 'model' | json }}
+</script>
+
+<script>
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+  
+  var Form = /*#__PURE__*/function () {
+      function Form() {
+        _classCallCheck(this, Form);
+      }
+
+      _createClass(Form, null, [{
+        key: "serialize",
+        value: function serialize(form) {
+          function stringKey(key, value) {
+            var beginBracket = key.lastIndexOf('[');
+
+            if (beginBracket === -1) {
+              var _hash = {};
+              _hash[key] = value;
+              return _hash;
+            }
+
+            var newKey = key.substr(0, beginBracket);
+            var newValue = {};
+            newValue[key.substring(beginBracket + 1, key.length - 1)] = value;
+            return stringKey(newKey, newValue);
+          }
+
+          var hash = {};
+
+          for (var i = 0, len = form.elements.length; i < len; i++) {
+            var formElement = form.elements[i];
+
+            if (formElement.name === '' || formElement.disabled) {
+              continue;
+            }
+
+            if (formElement.name && !formElement.disabled && (formElement.checked || /select|textarea/i.test(formElement.nodeName) || /hidden|text|search|tel|url|email|password|datetime|date|month|week|time|datetime-local|number|range|color/i.test(formElement.type))) {
+              var stringKeys = stringKey(formElement.name, formElement.value);
+              hash = Form.extend(hash, stringKeys);
+            }
+          }
+
+          return hash;
+        }
+      }, {
+        key: "extend",
+        value: function extend() {
+          var extended = {};
+          var i = 0; // Merge the object into the extended object
+
+          var merge = function merge(obj) {
+            for (var prop in obj) {
+              if (obj.hasOwnProperty(prop)) {
+                // If property is an object, merge properties
+                if (Object.prototype.toString.call(obj[prop]) === '[object Object]') {
+                  extended[prop] = Form.extend(extended[prop], obj[prop]);
+                } else {
+                  extended[prop] = obj[prop];
+                }
+              }
+            }
+          }; // Loop through each object and conduct a merge
+
+
+          for (; i < arguments.length; i++) {
+            merge(arguments[i]);
+          }
+
+          return extended;
+        }
+      }]);
+
+      return Form;
+    }();
+
+  
+  
+  
+
+</script>
 
 
 {% schema %}

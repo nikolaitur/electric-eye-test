@@ -1635,5 +1635,28 @@
         "default": true
       }
     ]
+  },
+  {
+    "name": "Collection",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_buynow",
+        "label": "Enable Buy Now Button",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "change_to_atc",
+        "label": "Change To Add to Cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_variants",
+        "label": "Show Variants",
+        "default": true
+      }
+    ]
   }
 ]
